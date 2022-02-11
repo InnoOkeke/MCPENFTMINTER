@@ -1484,7 +1484,7 @@ contract NFT is ERC721A, Ownable, ReentrancyGuard {
   uint256 private _reservedSupply;
   uint256 private _reservedMintLimit;
   uint256 private _amountForDev;
-  uint256 incrementBy = 0.01 ether;
+  uint256 private _incrementBy;
   string public baseURI = "ipfs://CID/";
 
   
@@ -1496,9 +1496,10 @@ contract NFT is ERC721A, Ownable, ReentrancyGuard {
     _mintCost = cost;
     _maxSupply = supply;
     _isPublicMintEnabled = false;
-    _reservedSupply = 2000;
-    _reservedMintLimit = 10;
-    _amountForDev = 5000;
+    _reservedSupply = 2;
+    _reservedMintLimit = 2;
+    _amountForDev = 5;
+    _incrementBy = 0.01 ether;
   }
 
   /**
@@ -1525,22 +1526,23 @@ contract NFT is ERC721A, Ownable, ReentrancyGuard {
   * @dev Mint `count` tokens if requirements are satisfied.
   * 
   */
-   function updateCost(uint256 _count) public payable returns (uint256 _cost){
-      if(_count < 3){
+   function updateCost(uint256 _supply) public payable returns (uint256 _cost){
+      if(_supply < 3){
           return _mintCost;
       }
-      if(_count < _maxSupply)
-          return _mintCost += incrementBy;
+      if(_supply < _maxSupply)
+          return _mintCost += _incrementBy;
   }
 
   function mintTokens(uint256 count)
   public
   payable
   nonReentrant{
+    uint256 supply = totalSupply();
     require(_isPublicMintEnabled, "Mint disabled");
     require(count > 0 && count <= 10, "You can drop minimum 1, maximum 100 NFTs");
-    require(count.add(totalSupply()) <= _maxSupply, "Exceeds max supply");
-    require(owner() == msg.sender || msg.value >= updateCost(count).mul(count),
+    require(count.add(supply) <= _maxSupply, "Exceeds max supply");
+    require(owner() == msg.sender || msg.value >= updateCost(supply).mul(count),
            "Ether value sent is below the price");
     
     _mint(msg.sender, count);
