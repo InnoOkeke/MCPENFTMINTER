@@ -1526,7 +1526,7 @@ contract NFT is ERC721A, Ownable, ReentrancyGuard {
   * @dev Mint `count` tokens if requirements are satisfied.
   * 
   */
-   function updateCost(uint256 _supply) public payable returns (uint256 _cost){
+   function updateCost(uint256 _supply) internal returns (uint256 _cost){
       if(_supply < 3){
           return _mintCost;
       }
