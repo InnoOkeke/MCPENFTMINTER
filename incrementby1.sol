@@ -1479,7 +1479,7 @@ contract MCPE is ERC721Enumerable, Ownable {
     return baseURI;
   }
 
-  function updateCost(uint256 _supply) public payable returns (uint256 _cost){
+  function updateCost(uint256 _supply) internal returns (uint256 _cost){
       if(_supply < 3){
           return cost;
       }
